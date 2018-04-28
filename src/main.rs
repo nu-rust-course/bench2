@@ -1,19 +1,21 @@
 extern crate bench2;
 
-use bench2::secs_micros::*;
-use bench2::*;
+use bench2::{Bench2, /*secs_micros::SecsMicros*/};
 
 use std::env::args;
 
 fn main() {
-    let relayed_argument = args().nth(1)
+    let _relayed_argument = args().nth(1)
         .expect(&format!("Usage: {} ARGUMENT", prog_name()));
 
-    build_release();
+    let mut bench = Bench2::new();
+    bench.run_iters(8);
 
-    let timing = run_with_arg_and_input(&relayed_argument, "");
+    bench.build_release().unwrap();
 
-    println!("{}", SecsMicros(timing));
+//    let timing = run_with_arg_and_input(&relayed_argument, "");
+
+//    println!("{}", SecsMicros(timing));
 }
 
 fn prog_name() -> String {
