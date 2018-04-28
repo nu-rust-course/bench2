@@ -5,7 +5,7 @@ use std::process::{Command, Stdio};
 use std::time::{Duration, Instant};
 
 const N: usize = 10;
-const M: usize = 100;
+const M: usize = 1;
 const INPUT: &'static str = "h\nhe\nhel\nhell\nhello\nhelloo\nhellooo\n";
 
 #[derive(Copy, Clone)]
@@ -19,10 +19,10 @@ fn main() {
                     .arg("--release"));
 
     let build = run_corrector_with_input(&corpus, "");
-    let correct = run_corrector_with_input(&corpus, INPUT);
-    let diff = if build < correct {correct - build} else {build - build};
+//    let correct = run_corrector_with_input(&corpus, INPUT);
+//    let diff = if build < correct {correct - build} else {build - build};
 
-    println!("{}\t{}", SecsMicros(build), SecsMicros(diff));
+    println!("{}", SecsMicros(build));
 }
 
 impl fmt::Display for SecsMicros {
