@@ -7,11 +7,7 @@ use std::env::args;
 fn main() {
     let mut args = args();
     args.next();
-
-    let mut bench = Bench2::new();
-    bench.args(args);
-    bench.run_iters(8);
-    bench.add_input_str("h\nhe\nhel\nhell\nhello\nhelloo\nhellooo\n");
+    let bench = process_args(args);
 
     bench.build_release().unwrap();
 
@@ -20,3 +16,12 @@ fn main() {
     println!("{}", SecsMicros(timing));
 }
 
+fn process_args<I: Iterator<Item = String>>(args: I) -> Bench2 {
+    let mut bench = Bench2::new();
+
+    bench.args(args);
+    bench.run_iters(8);
+    bench.add_input_str("h\nhe\nhel\nhell\nhello\nhelloo\nhellooo\n");
+
+    bench
+}

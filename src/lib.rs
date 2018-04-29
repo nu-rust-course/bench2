@@ -61,6 +61,13 @@ impl Bench2 {
         self
     }
 
+    /// Clears any input that would be sent to the process under test,
+    /// setting it back to read from stdin.
+    pub fn clear_input_str(&mut self) -> &mut Self {
+        self.input = None;
+        self
+    }
+
     fn input_mut(&mut self) -> &mut Vec<u8> {
         self.input.get_or_insert_with(Vec::new)
     }
