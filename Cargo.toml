@@ -1,5 +1,6 @@
 [package]
 name = "bench2"
+description = "a simple Rust benchmarker"
 version = "0.2.0"
 authors = ["Jesse A. Tov <jesse.tov@gmail.com>"]
 
