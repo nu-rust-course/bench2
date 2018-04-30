@@ -87,9 +87,22 @@ impl Bench2 {
         Ok(self)
     }
 
+    fn new_command(&self, progname: &str) -> Command {
+        let mut result = Command::new(progname);
+
+        if self.verbosity < 2 {
+            result.stdout(Stdio::null());
+            if self.verbosity < 1 {
+                result.stderr(Stdio::null());
+            }
+        }
+
+        result
+    }
+
     /// Attempts to run `cargo build --release`.
     pub fn build_release(&self) -> io::Result<()> {
-        let mut command = Command::new("cargo");
+        let mut command = self.new_command("cargo");
         command.arg("build").arg("--release");
 
         if command.status()?.success() {
@@ -101,7 +114,7 @@ impl Bench2 {
 
     /// Times some number of runs of `cargo run --release`.
     pub fn time_subject(&self) -> io::Result<Duration> {
-        let mut command = Command::new("cargo");
+        let mut command = self.new_command("cargo");
         command.arg("run").arg("--release").arg("--").args(&self.arguments);
 
         // We want to prepare to pipe input, but only if we're doing that.
