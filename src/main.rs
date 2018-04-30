@@ -19,20 +19,20 @@ fn process_args<I: Iterator<Item = String>>(mut args: I) -> Bench2 {
     let mut result = Bench2::new();
 
     while let Some(arg) = args.next() {
-        if let Some(param) = accept_arg(&arg, &mut args, "-i", "--input") {
+        if let Some(param) = accept_param(&arg, &mut args, "-i", "--input") {
             result.add_input_str(&param);
-        } else if let Some(param) = accept_arg(&arg, &mut args, "-f", "--input-file") {
+        } else if let Some(param) = accept_param(&arg, &mut args, "-f", "--input-file") {
             result.add_input_file(&param)
                 .expect("Could not read input file");
-        } else if let Some(param) = accept_arg(&arg, &mut args, "-n", "--run-iters") {
+        } else if let Some(param) = accept_param(&arg, &mut args, "-n", "--run-iters") {
             result.run_iters(param.parse().expect("Could not parse --run-iters parameter"));
-        } else if let Some(param) = accept_arg(&arg, &mut args, "-m", "--input-iters") {
+        } else if let Some(param) = accept_param(&arg, &mut args, "-m", "--input-iters") {
             result.input_iters(param.parse().expect("Could not parse --input-iters parameter"));
         } else if arg == "-v" {
             result.inc_verbosity();
         } else if arg == "--" {
             break;
-        } else if &arg[..1] == "-" {
+        } else if arg.get(..1) == Some("-") {
             panic!("Unrecognized flag: {}", arg);
         } else {
             result.arg(arg);
@@ -44,7 +44,7 @@ fn process_args<I: Iterator<Item = String>>(mut args: I) -> Bench2 {
     result
 }
 
-fn accept_arg<I>(arg: &str, rest: &mut I, short: &str, long: &str) -> Option<String>
+fn accept_param<I>(arg: &str, rest: &mut I, short: &str, long: &str) -> Option<String>
     where I: Iterator<Item=String>
 {
     if arg == short {
