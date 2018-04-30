@@ -43,8 +43,8 @@ impl Bench2 {
 
     /// Increases verbosity. This doesn't seem like the right API, but it's
     /// what the client wants for now.
-    pub fn inc_verbosity(&mut self) -> &mut Self {
-        self.verbosity += 1;
+    pub fn verbosity(&mut self, verbosity: u8) -> &mut Self {
+        self.verbosity = verbosity;
         self
     }
 

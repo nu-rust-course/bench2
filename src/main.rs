@@ -1,7 +1,12 @@
 extern crate bench2;
+extern crate foropts;
 
 use bench2::{Bench2, secs_micros::SecsMicros};
-use std::env::args;
+
+use std::{
+    env::args,
+    process::exit,
+};
 
 fn main() {
     let bench = process_args(args());
@@ -14,57 +19,60 @@ fn main() {
 }
 
 fn process_args<I: Iterator<Item = String>>(mut args: I) -> Bench2 {
-    args.next(); // Discard program name
+    use foropts::{Arg, Config};
 
+    enum Opt {
+        InputString(String),
+        InputFile(String),
+        RunIters(u32),
+        InputIters(u32),
+        IncreaseVerbosity,
+        Positional(String),
+    }
+
+    let progname = args.next().unwrap_or_else(|| "bench2".to_owned());
+
+    let config = Config::new(progname)
+        .version(env!("CARGO_PKG_VERSION"))
+        .author("Jesse A. Tov <jesse.tov@gmail.com>")
+        .about("a simple whole-program Rust bencher")
+        .arg(Arg::flag(|| Opt::IncreaseVerbosity)
+            .short('v').long("verbose"))
+        .arg(Arg::parsed_param("INPUT", Opt::InputString)
+            .short('i').long("input"))
+        .arg(Arg::parsed_param("FILE", Opt::InputFile)
+            .short('f').long("input-file"))
+        .arg(Arg::parsed_param("ITERS", Opt::RunIters)
+            .short('n').long("run-iters"))
+        .arg(Arg::parsed_param("ITERS", Opt::InputIters)
+            .short('m').long("input-iters"))
+        .arg(Arg::parsed_param("ARG", Opt::Positional));
+
+    let mut verbosity = 0;
     let mut result = Bench2::new();
 
-    while let Some(arg) = args.next() {
-        if let Some(param) = accept_param(&arg, &mut args, "-i", "--input") {
-            result.add_input_str(&param);
-        } else if let Some(param) = accept_param(&arg, &mut args, "-f", "--input-file") {
-            result.add_input_file(&param)
-                .expect("Could not read input file");
-        } else if let Some(param) = accept_param(&arg, &mut args, "-n", "--run-iters") {
-            result.run_iters(param.parse().expect("Could not parse --run-iters parameter"));
-        } else if let Some(param) = accept_param(&arg, &mut args, "-m", "--input-iters") {
-            result.input_iters(param.parse().expect("Could not parse --input-iters parameter"));
-        } else if arg == "-v" {
-            result.inc_verbosity();
-        } else if arg == "--" {
-            break;
-        } else if arg.get(..1) == Some("-") {
-            panic!("Unrecognized flag: {}", arg);
-        } else {
-            result.arg(arg);
+    for opt in config.iter(args) {
+        let opt = opt.unwrap_or_else(|e| {
+            eprintln!("{}", e);
+            exit(1);
+        });
+
+        match opt {
+            Opt::InputString(i)    => { result.add_input_str(&i); }
+            Opt::InputFile(f)      => {
+                result.add_input_file(&f).unwrap_or_else(|e| {
+                    eprintln!("Could not read input file: {}: {}", f, e);
+                    exit(2);
+                });
+            },
+            Opt::RunIters(n)       => { result.run_iters(n); }
+            Opt::InputIters(m)     => { result.input_iters(m); },
+            Opt::IncreaseVerbosity => { verbosity += 1; },
+            Opt::Positional(s)     => { result.arg(s); }
         }
     }
 
-    result.args(args);
+    result.verbosity(verbosity);
 
     result
-}
-
-fn accept_param<I>(arg: &str, rest: &mut I, short: &str, long: &str) -> Option<String>
-    where I: Iterator<Item=String>
-{
-    if arg == short {
-        Some(rest.next().expect(&format!("{} option requires parameter", short)).to_owned())
-    } else if arg == long {
-        Some(rest.next().expect(&format!("{} option requires parameter", long)).to_owned())
-    } else if let Some(param) = strip_prefix(arg, short) {
-        Some(param.to_owned())
-    } else if let Some(param) = strip_prefix(arg, &format!("{}=", long)) {
-        Some(param.to_owned())
-    } else {
-        None
-    }
-}
-
-fn strip_prefix<'a>(haystack: &'a str, needle: &str) -> Option<&'a str> {
-    if haystack.len() < needle.len() {return None}
-
-    let (before, after) = haystack.split_at(needle.len());
-    if before == needle {
-        Some(after)
-    } else {None}
 }
