@@ -41,6 +41,13 @@ impl Bench2 {
         self
     }
 
+    /// Increases verbosity. This doesn't seem like the right API, but it's
+    /// what the client wants for now.
+    pub fn inc_verbosity(&mut self) -> &mut Self {
+        self.verbosity += 1;
+        self
+    }
+
     /// Adds an argument to pass to the program under test.
     pub fn arg<S>(&mut self, argument: S) -> &mut Self
         where S: ToOwned<Owned = String>,

@@ -29,6 +29,8 @@ fn process_args<I: Iterator<Item = String>>(mut args: I) -> Bench2 {
             result.run_iters(param.parse().expect("Could not parse --run-iters parameter"));
         } else if let Some(param) = accept_arg(&arg, &mut args, "-m", "--input-iters") {
             result.input_iters(param.parse().expect("Could not parse --input-iters parameter"));
+        } else if arg == "-v" {
+            result.inc_verbosity();
         } else if arg == "--" {
             break;
         } else {
