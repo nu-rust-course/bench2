@@ -5,5 +5,4 @@ version = "0.2.0"
 authors = ["Jesse A. Tov <jesse.tov@gmail.com>"]
 
 [dependencies]
-clap = "~2.31"
-foropts = "0.1"
+foropts = "0.2"
