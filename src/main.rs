@@ -33,6 +33,8 @@ fn process_args<I: Iterator<Item = String>>(mut args: I) -> Bench2 {
             result.inc_verbosity();
         } else if arg == "--" {
             break;
+        } else if &arg[..1] == "-" {
+            panic!("Unrecognized flag: {}", arg);
         } else {
             result.arg(arg);
         }
