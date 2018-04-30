@@ -13,6 +13,7 @@ pub struct Bench2 {
     input_iters: u32,
     arguments:   Vec<String>,
     input:       Option<Vec<u8>>,
+    verbosity:   u8,
 }
 
 impl Bench2 {
@@ -24,6 +25,7 @@ impl Bench2 {
             input_iters: 1,
             arguments:   Vec::new(),
             input:       None,
+            verbosity:   0,
         }
     }
 
