@@ -1,7 +1,6 @@
 extern crate bench2;
 
 use bench2::{Bench2, secs_micros::SecsMicros};
-
 use std::env::args;
 
 fn main() {
