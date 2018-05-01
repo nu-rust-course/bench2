@@ -1,6 +1,6 @@
 [[package]]
 name = "bench2"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "foropts 0.3.2-pre (git+https://github.com/tov/foropts-rs.git)",
 ]
